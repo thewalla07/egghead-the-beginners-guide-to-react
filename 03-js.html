@@ -1,0 +1,27 @@
+<!-- 3 - replace react createElement function call with JSX -->
+
+<div id="root"></div>
+<script src="https://unpkg.com/react@16.0.0-rc.3/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@16.0.0-rc.3/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+<script type="text/babel">
+const rootElement = document.getElementById('root');
+// const element = React.createElement('div', {className: 'container', children: 'Hello'});
+
+
+// const content = 'Hello world'
+// const myClassName = 'container'
+const props = {
+    className: 'their-classname',
+    children: 'their children'
+};
+const element = <div className={myClassName}>{(() => content)()}</div>
+
+// last definition is the override i.e.:
+// [defaults] {...props overrides defaults} [override props]
+const element = <div className='our-classname' {...props} />
+
+console.log(element);
+
+ReactDOM.render(element, rootElement);
+</script>
