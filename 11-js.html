@@ -1,0 +1,87 @@
+<!-- 11 - stop memory leaks with componentWillUnmount lifecycle method in react -->
+
+<div id="toggle"></div>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16.0.0-rc.3/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@16.0.0-rc.3/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+<script type="text/babel">
+
+const rootElement = document.getElementById('root');
+const toggleElement = document.getElementById('toggle');
+
+class StopWatch extends React.Component{ 
+    state = {
+        running: false,
+        lapse: 0,
+    }
+    
+    toggle = () => {
+        const startTime = Date.now() - this.state.lapse
+        // can update state referencing existing state by using updater 
+        // function which accepts the old state and returns the new state
+        this.setState(state => {
+            if (state.running) {
+                clearInterval(this.timer)
+            } else {
+                this.timer = setInterval(() => {
+                    this.setState({
+                        lapse: Date.now() - startTime,
+                    }, () => {
+                        console.log(this.state.lapse)
+                    })
+                });
+            }
+            return {running: !state.running  }
+        })
+    }
+    clear = () => {
+        clearInterval(this.timer)
+        // can update state by calling setState(state)
+        this.setState({lapse: 0, running: false})
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timer)
+    }
+    
+    render() {        
+        const {lapse, running} = this.state
+        const buttonStyles = {
+            border: '1px solid #ccc',
+            background: '#fff',
+            fontSize: '2em',
+            padding:15,
+            margin: 5,
+            width: 200,
+        }
+        return (
+            <div style={{textAlign: 'center'}}>
+                <label
+                style={{fontSize: '5em', display: 'block'}}>{lapse}ms</label>
+                <button onClick={this.toggle} style={buttonStyles}>{running ? 'Stop' : 'Start'}</button>
+                <button onClick={this.clear} style={buttonStyles}>Clear</button>
+            </div>
+        )
+    }
+    
+}
+const toggle = (
+    <button onClick={showTimer}>showhide</button>
+)
+
+let visible = true
+function showTimer() {
+    if (visible) {
+        ReactDOM.render(<div />, rootElement);
+    } else {
+        ReactDOM.render(<StopWatch />, rootElement);
+    }
+    visible = !visible
+}
+
+ReactDOM.render(toggle, toggleElement)
+showTimer()
+
+
+</script>
