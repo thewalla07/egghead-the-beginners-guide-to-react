@@ -15,16 +15,48 @@ class MyFancyForm extends React.Component {
         'pear',
         'peach',
     ]
+    state = {multiline: '', commaSeparated: '', multiSelect: []}
+
     handleCommaSeparatedChange = event => {
-        console.log('handleCommaSeparatedChange')
+        const {value} = event.target    
+        const allVals = value
+            .split(',')
+            .map(v=>v.trim())
+            .filter(Boolean)
+        this.setState({
+            commaSeparated: value, 
+            multiline: allVals
+                .join('\n'),
+            multiSelect: 
+                allVals.filter(v => MyFancyForm.availableOptions.includes(v))
+            })
+
     }
     handleMultilineChange = event => {
-        console.log('handleMultilineChanged')
+        const {value} = event.target    
+        const allVals = value
+            .split('\n')
+            .map(v=>v.trim())
+            .filter(Boolean)
+        this.setState({
+            multiline: value,
+            commaSeparated: allVals
+                .join(','),
+            multiSelect: 
+                allVals.filter(v => MyFancyForm.availableOptions.includes(v))
+            })
     }
     handleMultiSelectChange = event => {
-        console.log('handleMultiSelectChanged')
+        const {selectedOptions} = event.target
+        const allVals = Array.from(event.target.selectedOptions).map(o => o.value)
+        this.setState({
+            commaSeparated: allVals.join(','),
+            multiline:  allVals.join('\n'),
+            multiSelect: allVals
+        })
     }
     render() {
+        const {commaSeparated, multiline, multiSelect} = this.state
         return (
             <form>
                 <div>
@@ -33,6 +65,7 @@ class MyFancyForm extends React.Component {
                         <br />
                         <input
                             type='text'
+                            value={commaSeparated}
                             onChange={
                                 this.handleCommaSeparatedChange
                             }
@@ -47,6 +80,7 @@ class MyFancyForm extends React.Component {
                             rows={
                                 MyFancyForm.availableOptions.length
                             }
+                            value={multiline}
                             onChange={
                                 this.handleMultilineChange
                             }
@@ -59,19 +93,24 @@ class MyFancyForm extends React.Component {
                         <br />
                         <select
                             multiple
+                            value={multiSelect}
                             size={
                                 MyFancyForm.availableOptions.length
                             }
                             onChange={
                                 this.handleMultiSelectChange
                             }
-                        />
+                        >
+                        {MyFancyForm.availableOptions.map(option => (<option key={option} value={option}>{option}</option>))}
+                        </select>
                     </label>
                 </div>
             </form>
         )
     }
 }
+
+ReactDOM.render(<MyFancyForm />, document.getElementById('root'))
 
 
 </script>
